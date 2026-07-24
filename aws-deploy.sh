@@ -14,20 +14,20 @@ sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cach
 sudo apt-get update -y
 sudo apt-get install -y ca-certificates curl gnupg lsb-release git
 
-# 1.5 Setup 512MB Swap File for Node memory safety
+# 1.5 Setup 1GB Swap File for Node memory safety
 if [ ! -f /swapfile ]; then
-    echo "🧠 Configuring 512MB Swap file for Node compilation safety..."
-    sudo fallocate -l 512M /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=512
+    echo "🧠 Configuring 1GB Swap file for Node compilation safety..."
+    sudo fallocate -l 1G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
     echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
 fi
 
-# 2. Install Node.js 20 LTS for Host Frontend Execution
-if ! command -v node &> /dev/null; then
-    echo "🟢 Installing Node.js on Host..."
-    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+# 2. Install Node.js 22 LTS for Host Frontend Execution
+if ! command -v node &> /dev/null || [[ "$(node -v)" == v20* ]]; then
+    echo "🟢 Installing Node.js 22 LTS on Host..."
+    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
     sudo apt-get install -y nodejs
 fi
 
