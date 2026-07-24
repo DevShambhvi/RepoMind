@@ -10,11 +10,14 @@ import {
   Search,
   Sun,
   X,
+  LogOut,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useWorkspace } from "@/lib/store";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface TopbarProps {
   isRightPanelOpen: boolean;
@@ -36,6 +39,21 @@ export default function Topbar({
   onOpenIngest,
 }: TopbarProps) {
   const { activeRepo, setActiveRepo, backendOnline } = useWorkspace();
+  const router = useRouter();
+  const [user, setUser] = useState<{ name: string; avatar: string } | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
+
+  useEffect(() => {
+    const raw = localStorage.getItem("repomind_user");
+    if (raw) {
+      setUser(JSON.parse(raw));
+    }
+  }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem("repomind_user");
+    router.push("/login");
+  };
 
   // Extract "owner/repo" from full URL for display
   const repoDisplayName = activeRepo
@@ -156,6 +174,52 @@ export default function Topbar({
             <PanelRightOpen className="size-4" />
           )}
         </Button>
+
+        <span className="hidden h-4 w-px bg-border/80 sm:block" />
+
+        {/* User profile dropdown */}
+        {user && (
+          <div className="relative">
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="flex items-center gap-2 focus:outline-none"
+              aria-label="User menu"
+            >
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="size-7 rounded-full border border-border bg-muted/40 shadow-inner"
+              />
+              <span className="hidden text-xs font-medium text-foreground/80 md:inline max-w-[80px] truncate">
+                {user.name}
+              </span>
+            </button>
+
+            {showMenu && (
+              <>
+                <div 
+                  className="fixed inset-0 z-30" 
+                  onClick={() => setShowMenu(false)}
+                />
+                <div className="absolute right-0 mt-2.5 w-44 rounded-lg border border-border bg-popover p-1.5 shadow-lg ring-1 ring-black/5 animate-in fade-in slide-in-from-top-1 z-40">
+                  <div className="px-2.5 py-1.5 text-xs text-muted-foreground border-b border-border/60 mb-1 max-w-full truncate">
+                    Signed in as <span className="font-semibold text-foreground/80">{user.name}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowMenu(false);
+                      handleSignOut();
+                    }}
+                    className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-xs text-red-500 hover:bg-red-500/10 hover:text-red-400 transition"
+                  >
+                    <LogOut className="size-3.5" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

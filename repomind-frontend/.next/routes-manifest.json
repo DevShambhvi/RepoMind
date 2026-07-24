@@ -48,6 +48,12 @@
       "namedRegex": "^/favicon\\.ico(?:/)?$"
     },
     {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
       "page": "/workspace",
       "regex": "^/workspace(?:/)?$",
       "routeKeys": {},
