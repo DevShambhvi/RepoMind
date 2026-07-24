@@ -58,9 +58,10 @@ EOF
 fi
 
 # 5. Clean Docker cache and build Backend Container
-echo "🧹 Purging unused Docker layer cache..."
+echo "🧹 Purging unused system & Docker caches..."
 sudo docker system prune -af --volumes || true
 sudo docker builder prune -af || true
+sudo rm -rf ~/.npm /tmp/* /var/tmp/* /var/cache/apt/* || true
 
 echo "⚡ Starting FastAPI Backend Container..."
 sudo docker compose up -d --build backend
