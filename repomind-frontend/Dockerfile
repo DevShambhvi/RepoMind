@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install dependencies based on package-lock.json
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci && npm cache clean --force
 
 # Stage 2: Builder
 FROM node:22-alpine AS builder
@@ -16,7 +16,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-RUN npm run build
+RUN npm run build && npm cache clean --force
 
 # Stage 3: Runner (Production)
 FROM node:22-alpine AS runner
