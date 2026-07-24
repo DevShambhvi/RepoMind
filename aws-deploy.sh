@@ -8,10 +8,11 @@ set -e
 
 echo "🚀 Starting RepoMind AWS Deployment..."
 
-# 1. Update system packages
+# 1. Update system packages & clean package caches
 echo "📦 Updating system packages..."
 sudo apt-get update -y
 sudo apt-get install -y ca-certificates curl gnupg lsb-release git
+sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* || true
 
 # 1.5 Setup 2GB Swap File for AWS Free Tier (t2.micro / t3.micro 1GB RAM safety)
 if [ ! -f /swapfile ]; then
