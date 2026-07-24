@@ -1,0 +1,186 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif);
+  --font-heading: var(--font-serif);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  
+  --color-rust: var(--rust);
+  --color-rust-light: var(--rust-light);
+}
+
+:root {
+  --background: oklch(0.985 0.004 60); /* #faf9f6 - warm paper off-white */
+  --foreground: oklch(0.24 0.01 60);    /* #2c2b2a - warm charcoal */
+  --card: oklch(0.992 0.003 60);        /* slightly lighter paper */
+  --card-foreground: oklch(0.24 0.01 60);
+  --popover: oklch(0.992 0.003 60);
+  --popover-foreground: oklch(0.24 0.01 60);
+  --primary: oklch(0.24 0.01 60);       /* solid charcoal */
+  --primary-foreground: oklch(0.985 0.004 60);
+  --secondary: oklch(0.95 0.005 60);    /* warm gray/beige */
+  --secondary-foreground: oklch(0.24 0.01 60);
+  --muted: oklch(0.95 0.005 60);
+  --muted-foreground: oklch(0.55 0.008 60); /* #7c7b77 */
+  --accent: oklch(0.97 0.01 45);        /* subtle soft rust tint */
+  --accent-foreground: oklch(0.58 0.14 42); /* warm rust orange */
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.006 60);       /* #e4e3dc - soft physical boundary */
+  --input: oklch(0.92 0.006 60);
+  --ring: oklch(0.58 0.14 42);          /* warm orange focus ring */
+  --radius: 0.625rem;
+  --sidebar: oklch(0.975 0.004 60);     /* slightly offset sidebar background */
+  --sidebar-foreground: oklch(0.24 0.01 60);
+  --sidebar-primary: oklch(0.24 0.01 60);
+  --sidebar-primary-foreground: oklch(0.985 0.004 60);
+  --sidebar-accent: oklch(0.95 0.005 60);
+  --sidebar-accent-foreground: oklch(0.24 0.01 60);
+  --sidebar-border: oklch(0.92 0.006 60);
+  --sidebar-ring: oklch(0.58 0.14 42);
+  
+  /* Rust Accent Palette */
+  --rust: oklch(0.58 0.14 42);          /* #cc5d2f */
+  --rust-light: oklch(0.965 0.018 45);  /* #FAF0EB */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui;
+}
+
+.dark {
+  --background: oklch(0.2 0.006 60);    /* #222120 - warm dark charcoal */
+  --foreground: oklch(0.93 0.004 60);   /* #eae8e3 - warm off-white */
+  --card: oklch(0.22 0.006 60);
+  --card-foreground: oklch(0.93 0.004 60);
+  --popover: oklch(0.22 0.006 60);
+  --popover-foreground: oklch(0.93 0.004 60);
+  --primary: oklch(0.93 0.004 60);      /* off-white for primary buttons in dark mode */
+  --primary-foreground: oklch(0.2 0.006 60);
+  --secondary: oklch(0.25 0.006 60);
+  --secondary-foreground: oklch(0.93 0.004 60);
+  --muted: oklch(0.25 0.006 60);
+  --muted-foreground: oklch(0.65 0.005 60);
+  --accent: oklch(0.25 0.012 45);
+  --accent-foreground: oklch(0.7 0.12 42); /* glowing warm orange */
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.26 0.006 60);
+  --input: oklch(0.26 0.006 60);
+  --ring: oklch(0.7 0.12 42);
+  --sidebar: oklch(0.18 0.006 60);
+  --sidebar-foreground: oklch(0.93 0.004 60);
+  --sidebar-primary: oklch(0.93 0.004 60);
+  --sidebar-primary-foreground: oklch(0.18 0.006 60);
+  --sidebar-accent: oklch(0.24 0.006 60);
+  --sidebar-accent-foreground: oklch(0.93 0.004 60);
+  --sidebar-border: oklch(0.24 0.006 60);
+  --sidebar-ring: oklch(0.7 0.12 42);
+  
+  --rust: oklch(0.68 0.12 42);          /* brighter rust for dark mode */
+  --rust-light: oklch(0.26 0.015 45);
+}
+
+@layer base {
+  * {
+    @apply border-border/80 outline-ring/30;
+  }
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+  html {
+    @apply font-sans antialiased;
+  }
+  h1, h2, h3, .font-serif-editorial {
+    font-family: var(--font-serif), Georgia, serif;
+  }
+}
+
+/* Subtle physical paper grain effect */
+.bg-grain {
+  position: relative;
+}
+.bg-grain::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.022;
+  pointer-events: none;
+  z-index: 10;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 250 250' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Dark mode grain opacity adjust */
+.dark .bg-grain::before {
+  opacity: 0.035;
+}
+
+/* Editorial Grid overlay */
+.bg-editorial-grid {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, var(--border) 1px, transparent 1px),
+                    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-position: center;
+  opacity: 0.25;
+}
+
+.dark .bg-editorial-grid {
+  opacity: 0.15;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
