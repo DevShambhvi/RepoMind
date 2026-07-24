@@ -64,6 +64,7 @@ sudo docker builder prune -af || true
 sudo rm -rf ~/.npm /tmp/* /var/tmp/* /var/cache/apt/* || true
 
 echo "⚡ Starting FastAPI Backend Container..."
+sudo docker rm -f repomind-backend || true
 sudo docker compose up -d --build backend
 
 # 6. Build and Start Frontend on Host (Zero Docker Disk Overhead)
