@@ -5,10 +5,20 @@
  * All functions throw on network errors; callers should catch.
  */
 
-const API_BASE =
-  typeof window !== "undefined"
-    ? (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000")
-    : "http://localhost:8000";
+const getApiBase = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl && envUrl !== "http://localhost:8000" && !envUrl.includes("localhost")) {
+    return envUrl;
+  }
+  if (typeof window !== "undefined") {
+    const protocol = window.location.protocol;
+    const hostname = window.location.hostname;
+    return `${protocol}//${hostname}:8000`;
+  }
+  return envUrl ?? "http://localhost:8000";
+};
+
+const API_BASE = getApiBase();
 
 // ── Types ────────────────────────────────────────────────
 
