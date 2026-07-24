@@ -95,12 +95,24 @@ async def answer_query(
         "### Answer"
     )
 
-    response = _client.models.generate_content(
-        model=settings.llm_model,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            temperature=0.3,
-            max_output_tokens=2048,
-        ),
-    )
-    return response.text
+    models_to_try = [settings.llm_model, "models/gemini-2.5-flash", "models/gemini-flash-latest"]
+    # Deduplicate preserving order
+    models_to_try = list(dict.fromkeys(models_to_try))
+
+    last_error: Exception | None = None
+    for m in models_to_try:
+        try:
+            response = _client.models.generate_content(
+                model=m,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0.3,
+                    max_output_tokens=2048,
+                ),
+            )
+            return response.text
+        except Exception as e:
+            logger.warning("Generation with model %s failed: %s. Trying next candidate...", m, e)
+            last_error = e
+
+    raise last_error or RuntimeError("All LLM model candidates failed.")

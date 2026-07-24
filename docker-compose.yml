@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./repomind-backend
+      dockerfile: Dockerfile
+    container_name: repomind-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - QDRANT_URL=./qdrant_db
+      - QDRANT_COLLECTION=git_rag
+      - EMBEDDING_MODEL=models/gemini-embedding-001
+      - LLM_MODEL=models/gemini-2.5-flash
+      - CORS_ORIGINS=*
+    volumes:
+      - ./repomind-backend/qdrant_db:/app/qdrant_db
+
+  frontend:
+    build:
+      context: ./repomind-frontend
+      dockerfile: Dockerfile
+    container_name: repomind-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    depends_on:
+      - backend
