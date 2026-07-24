@@ -8,21 +8,13 @@ set -e
 
 echo "🚀 Starting RepoMind AWS Deployment..."
 
-# 1. Expand EBS root partition if available & clean system caches
+# 1. Free up disk space & purge old swap/apt caches
 echo "📦 Optimizing system disk space..."
+sudo swapoff /swapfile 2>/dev/null || true
+sudo rm -f /swapfile 2>/dev/null || true
+sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache ~/.npm || true
 sudo apt-get update -y
 sudo apt-get install -y ca-certificates curl gnupg lsb-release git
-sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* || true
-
-# 1.5 Setup 2GB Swap File for memory safety (1GB RAM instances)
-if [ ! -f /swapfile ]; then
-    echo "🧠 Configuring 2GB Swap file for AWS Free Tier memory safety..."
-    sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
-    sudo chmod 600 /swapfile
-    sudo mkswap /swapfile
-    sudo swapon /swapfile
-    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
-fi
 
 # 2. Install Node.js 20 LTS for Host Frontend Execution
 if ! command -v node &> /dev/null; then
