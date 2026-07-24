@@ -77,8 +77,9 @@ if [ ! -d ".next" ]; then
 fi
 
 # Kill any previous node server process running on 3000
-npx kill-port 3000 || true
-nohup npm run start -- -p 3000 > ../frontend.log 2>&1 &
+npx --yes kill-port 3000 || true
+PORT=3000 nohup npx next start -p 3000 > ../frontend.log 2>&1 &
+sleep 3
 cd ..
 
 echo "======================================================================"
