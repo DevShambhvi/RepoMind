@@ -67,11 +67,14 @@ echo "⚡ Starting FastAPI Backend Container..."
 sudo docker rm -f repomind-backend || true
 sudo docker compose up -d --build backend
 
-# 6. Build and Start Frontend on Host (Zero Docker Disk Overhead)
-echo "🎨 Building & Launching Next.js Frontend on Host..."
+# 6. Launch Pre-built Next.js Frontend on Host (Zero AWS Compilation RAM/Disk Overhead)
+echo "🎨 Launching Next.js Frontend on Host..."
 cd repomind-frontend
 npm install --omit=dev --no-audit --no-fund
-npm run build
+if [ ! -d ".next" ]; then
+    echo "⚡ Building production bundle..."
+    npm run build
+fi
 
 # Kill any previous node server process running on 3000
 npx kill-port 3000 || true
