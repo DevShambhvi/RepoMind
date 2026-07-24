@@ -49,19 +49,17 @@ graph TD
 ```text
 Repomind/
 ├── repomind-backend/                # FastAPI RAG Backend
-│   └── IBM Project/
-│       └── git-rag-backend/
-│           ├── app/
-│           │   ├── main.py          # FastAPI route handlers & task tracker
-│           │   ├── config.py        # Typed settings & environment loader
-│           │   ├── database/
-│           │   │   └── vector_db.py # Qdrant vector database interface
-│           │   ├── schemas/         # Pydantic models & request schemas
-│           │   └── services/
-│           │       ├── gemini.py    # Google GenAI SDK (Embeddings & LLM)
-│           │       └── github.py    # GitHub API repository fetcher
-│           ├── tests/               # Integration unit test suite
-│           └── requirements.txt
+│   ├── app/
+│   │   ├── main.py          # FastAPI route handlers & task tracker
+│   │   ├── config.py        # Typed settings & environment loader
+│   │   ├── database/
+│   │   │   └── vector_db.py # Qdrant vector database interface
+│   │   ├── schemas/         # Pydantic models & request schemas
+│   │   └── services/
+│   │       ├── gemini.py    # Google GenAI SDK (Embeddings & LLM)
+│   │       └── github.py    # GitHub API repository fetcher
+│   ├── tests/               # Integration unit test suite
+│   └── requirements.txt
 │
 └── repomind-frontend/               # Next.js 16 Web Application
     ├── app/                         # App router (Landing & Workspace)
@@ -79,7 +77,7 @@ Repomind/
 
 ### 1. Backend Configuration
 
-Create a `.env` file inside `repomind-backend/IBM Project/git-rag-backend/.env`:
+Create a `.env` file inside `repomind-backend/.env`:
 
 ```env
 # === API Keys ===
@@ -104,7 +102,7 @@ CORS_ORIGINS=http://localhost:3000
 
 #### Backend (Python 3.10+)
 ```bash
-cd "repomind-backend/IBM Project/git-rag-backend"
+cd repomind-backend
 pip install -r requirements.txt
 ```
 
@@ -120,7 +118,7 @@ npm install
 
 ### Start Backend FastAPI Server
 ```bash
-cd "repomind-backend/IBM Project/git-rag-backend"
+cd repomind-backend
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 - **Live API Health**: `http://127.0.0.1:8000/health`
@@ -139,7 +137,7 @@ npm run dev
 
 Execute the automated backend test suite:
 ```bash
-cd "repomind-backend/IBM Project/git-rag-backend"
+cd repomind-backend
 python -m unittest discover tests
 ```
 
