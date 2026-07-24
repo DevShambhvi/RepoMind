@@ -1,20 +1,20 @@
 #!/bin/bash
 # ==============================================================================
-# RepoMind AWS EC2 One-Click Deployment Script
-# Tested on Ubuntu 22.04 LTS & Ubuntu 24.04 LTS
+# RepoMind AWS EC2 Production Deployment Script
+# Optimized for AWS Free Tier (Ubuntu 22.04 / 24.04 LTS)
 # ==============================================================================
 
 set -e
 
 echo "🚀 Starting RepoMind AWS Deployment..."
 
-# 1. Update system packages & clean package caches
-echo "📦 Updating system packages..."
+# 1. Expand EBS root partition if available & clean system caches
+echo "📦 Optimizing system disk space..."
 sudo apt-get update -y
 sudo apt-get install -y ca-certificates curl gnupg lsb-release git
 sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* || true
 
-# 1.5 Setup 2GB Swap File for AWS Free Tier (t2.micro / t3.micro 1GB RAM safety)
+# 1.5 Setup 2GB Swap File for memory safety (1GB RAM instances)
 if [ ! -f /swapfile ]; then
     echo "🧠 Configuring 2GB Swap file for AWS Free Tier memory safety..."
     sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
@@ -24,7 +24,14 @@ if [ ! -f /swapfile ]; then
     echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
 fi
 
-# 2. Install Docker & Docker Compose if not installed
+# 2. Install Node.js 20 LTS for Host Frontend Execution
+if ! command -v node &> /dev/null; then
+    echo "🟢 Installing Node.js on Host..."
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+fi
+
+# 3. Install Docker for Backend Service
 if ! command -v docker &> /dev/null; then
     echo "🐳 Installing Docker..."
     sudo mkdir -p /etc/apt/keyrings
@@ -35,7 +42,7 @@ if ! command -v docker &> /dev/null; then
     sudo usermod -aG docker $USER
 fi
 
-# 3. Create .env file for Docker Compose if missing
+# 4. Create environment file if missing
 if [ ! -f .env ]; then
     echo "📝 Creating production .env file..."
     read -p "Enter GEMINI_API_KEY: " gemini_key
@@ -50,14 +57,24 @@ EOF
     echo "✅ .env created with NEXT_PUBLIC_API_URL=http://${PUBLIC_IP}:8000"
 fi
 
-# 4. Build and Start Docker Containers
-echo "🧹 Cleaning unused Docker cache & build snapshots..."
+# 5. Clean Docker cache and build Backend Container
+echo "🧹 Purging unused Docker layer cache..."
 sudo docker system prune -af --volumes || true
 sudo docker builder prune -af || true
 
-echo "⚡ Building and starting RepoMind containers..."
-sudo docker compose build
-sudo docker compose up -d
+echo "⚡ Starting FastAPI Backend Container..."
+sudo docker compose up -d --build backend
+
+# 6. Build and Start Frontend on Host (Zero Docker Disk Overhead)
+echo "🎨 Building & Launching Next.js Frontend on Host..."
+cd repomind-frontend
+npm install --omit=dev --no-audit --no-fund
+npm run build
+
+# Kill any previous node server process running on 3000
+npx kill-port 3000 || true
+nohup npm run start -- -p 3000 > ../frontend.log 2>&1 &
+cd ..
 
 echo "======================================================================"
 echo "🎉 RepoMind is LIVE on AWS!"
