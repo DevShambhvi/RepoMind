@@ -78,8 +78,10 @@ fi
 
 # Kill any previous node server process running on 3000
 npx --yes kill-port 3000 || true
-PORT=3000 nohup npx next start -p 3000 > ../frontend.log 2>&1 &
-sleep 3
+PORT=3000 nohup ./node_modules/.bin/next start -p 3000 > ../frontend.log 2>&1 &
+sleep 4
+echo "📋 Frontend startup log:"
+cat ../frontend.log || true
 cd ..
 
 echo "======================================================================"
