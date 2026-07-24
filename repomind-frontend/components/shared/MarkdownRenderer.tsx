@@ -7,6 +7,7 @@
  * links, and file path references.  No heavy dependencies.
  */
 
+import React from "react";
 import { FileText } from "lucide-react";
 
 interface MarkdownRendererProps {
@@ -140,7 +141,7 @@ function parseBlocks(raw: string): BlockType[] {
 function Block({ block }: { block: BlockType }) {
   switch (block.type) {
     case "heading": {
-      const Tag = (`h${Math.min(block.level, 6)}`) as keyof JSX.IntrinsicElements;
+      const Tag = (`h${Math.min(block.level, 6)}`) as React.ElementType;
       const sizes: Record<number, string> = {
         1: "text-lg font-semibold",
         2: "text-base font-semibold",
