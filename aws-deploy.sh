@@ -50,8 +50,9 @@ EOF
 fi
 
 # 4. Build and Start Docker Containers
-echo "🧹 Cleaning unused Docker cache to free disk space..."
+echo "🧹 Cleaning unused Docker cache & build snapshots..."
 sudo docker system prune -af --volumes || true
+sudo docker builder prune -af || true
 
 echo "⚡ Building and starting RepoMind containers..."
 sudo docker compose build

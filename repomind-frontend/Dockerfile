@@ -1,41 +1,17 @@
-# Stage 1: Base & Dependencies
-FROM node:22-alpine AS base
+FROM node:22-alpine
 WORKDIR /app
 
-# Install dependencies based on package-lock.json
-COPY package.json package-lock.json ./
-RUN npm ci && npm cache clean --force
-
-# Stage 2: Builder
-FROM node:22-alpine AS builder
-WORKDIR /app
-COPY --from=base /app/node_modules ./node_modules
-COPY . .
-
-# Set production environment for Next.js build
+ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
-
-RUN npm run build && npm cache clean --force
-
-# Stage 3: Runner (Production)
-FROM node:22-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+COPY package.json package-lock.json ./
+RUN npm ci && npm cache clean --force
 
-# Copy standalone build and assets
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
+COPY . .
+RUN npm run build && npm cache clean --force
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["npm", "run", "start"]
