@@ -8,18 +8,22 @@ set -e
 
 echo "🚀 Starting RepoMind AWS Deployment..."
 
-# 1. Free up disk space & purge old apt caches
-echo "📦 Optimizing system disk space..."
+# 1. Purge unused system & Docker caches FIRST to maximize disk space
+echo "📦 Purging unused system & Docker caches to free disk space..."
+if command -v docker &> /dev/null; then
+    sudo docker system prune -af --volumes || true
+    sudo docker builder prune -af || true
+fi
 sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache ~/.npm || true
 sudo apt-get update -y
 sudo apt-get install -y ca-certificates curl gnupg lsb-release git
 
-# 1.5 Setup 2GB Swap File for Node memory safety (using dd to avoid SIGBUS sparse file error)
-if [ ! -f /swapfile ] || [ $(stat -c%s /swapfile 2>/dev/null || echo 0) -lt 2000000000 ]; then
-    echo "🧠 Configuring 2GB Swap file for Node compilation safety..."
+# 1.5 Setup 1.5GB Swap File for Node memory safety (using dd to avoid SIGBUS sparse file error)
+if [ ! -f /swapfile ] || [ $(stat -c%s /swapfile 2>/dev/null || echo 0) -lt 1500000000 ]; then
+    echo "🧠 Configuring 1.5GB Swap file for Node compilation safety..."
     sudo swapoff /swapfile || true
     sudo rm -f /swapfile
-    sudo dd if=/dev/zero of=/swapfile bs=1M count=2048 status=none
+    sudo dd if=/dev/zero of=/swapfile bs=1M count=1536 status=none
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
