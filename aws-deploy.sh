@@ -75,13 +75,16 @@ echo "⚡ Starting FastAPI Backend Container..."
 sudo docker rm -f repomind-backend || true
 sudo docker compose up -d --build backend
 
-# 6. Launch Pre-built Next.js Frontend on Host
+# 6. Launch Next.js Frontend on Host
 echo "🎨 Launching Next.js Frontend on Host..."
 cd repomind-frontend
-npm install --no-audit --no-fund
-echo "⚡ Building production bundle..."
-rm -rf .next
-NODE_OPTIONS="--max-old-space-size=1536" npm run build
+npm install --omit=dev --no-audit --no-fund
+if [ ! -d ".next" ]; then
+    echo "⚡ Building production bundle on host..."
+    NODE_OPTIONS="--max-old-space-size=1536" npm run build
+else
+    echo "✅ Pre-built production bundle detected (.next). Skipping heavy SWC build!"
+fi
 
 # Kill any previous node server process running on 3000
 npx --yes kill-port 3000 || true
