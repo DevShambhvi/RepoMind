@@ -9,21 +9,23 @@ set -e
 echo "🚀 Starting RepoMind AWS Deployment..."
 
 # 1. Purge unused system & Docker caches FIRST to maximize disk space
-echo "📦 Purging unused system & Docker caches to free disk space..."
+echo "📦 Purging system caches, logs & Docker data..."
+sudo systemctl start docker || true
 if command -v docker &> /dev/null; then
     sudo docker system prune -af --volumes || true
     sudo docker builder prune -af || true
 fi
-sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache ~/.npm || true
+sudo journalctl --vacuum-size=20M || true
+sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache ~/.npm /var/log/*.gz /var/log/*.[0-9] || true
 sudo apt-get update -y
 sudo apt-get install -y ca-certificates curl gnupg lsb-release git
 
-# 1.5 Setup 1.5GB Swap File for Node memory safety (using dd to avoid SIGBUS sparse file error)
-if [ ! -f /swapfile ] || [ $(stat -c%s /swapfile 2>/dev/null || echo 0) -lt 1500000000 ]; then
-    echo "🧠 Configuring 1.5GB Swap file for Node compilation safety..."
+# 1.5 Setup 1GB Swap File (with 512MB fallback) for Node memory safety
+if [ ! -f /swapfile ] || [ $(stat -c%s /swapfile 2>/dev/null || echo 0) -lt 500000000 ]; then
+    echo "🧠 Configuring Swap file for Node compilation safety..."
     sudo swapoff /swapfile || true
     sudo rm -f /swapfile
-    sudo dd if=/dev/zero of=/swapfile bs=1M count=1536 status=none
+    sudo dd if=/dev/zero of=/swapfile bs=1M count=1024 status=none || sudo dd if=/dev/zero of=/swapfile bs=1M count=512 status=none
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
@@ -79,7 +81,7 @@ cd repomind-frontend
 npm install --no-audit --no-fund
 echo "⚡ Building production bundle..."
 rm -rf .next
-NODE_OPTIONS="--max-old-space-size=2048" npm run build
+NODE_OPTIONS="--max-old-space-size=1536" npm run build
 
 # Kill any previous node server process running on 3000
 npx --yes kill-port 3000 || true
