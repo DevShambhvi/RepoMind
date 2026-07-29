@@ -14,14 +14,16 @@ sudo apt-get clean && sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cach
 sudo apt-get update -y
 sudo apt-get install -y ca-certificates curl gnupg lsb-release git
 
-# 1.5 Setup 1GB Swap File for Node memory safety
-if [ ! -f /swapfile ]; then
-    echo "🧠 Configuring 1GB Swap file for Node compilation safety..."
-    sudo fallocate -l 1G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
+# 1.5 Setup 2GB Swap File for Node memory safety (using dd to avoid SIGBUS sparse file error)
+if [ ! -f /swapfile ] || [ $(stat -c%s /swapfile 2>/dev/null || echo 0) -lt 2000000000 ]; then
+    echo "🧠 Configuring 2GB Swap file for Node compilation safety..."
+    sudo swapoff /swapfile || true
+    sudo rm -f /swapfile
+    sudo dd if=/dev/zero of=/swapfile bs=1M count=2048 status=none
     sudo chmod 600 /swapfile
     sudo mkswap /swapfile
     sudo swapon /swapfile
-    echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
+    grep -q "/swapfile" /etc/fstab || echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
 fi
 
 # 2. Install Node.js 22 LTS for Host Frontend Execution
@@ -73,7 +75,7 @@ cd repomind-frontend
 npm install --no-audit --no-fund
 echo "⚡ Building production bundle..."
 rm -rf .next
-npm run build
+NODE_OPTIONS="--max-old-space-size=2048" npm run build
 
 # Kill any previous node server process running on 3000
 npx --yes kill-port 3000 || true
